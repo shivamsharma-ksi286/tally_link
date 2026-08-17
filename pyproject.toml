@@ -1,7 +1,7 @@
 [project]
 name = "tally_link"
 authors = [
-    { name = "SVNIX Solutions", email = "contact@svnix.solutions"}
+    { name = "Ksolves India Limited", email = "contact@ksolves.com"}
 ]
 description = "Tally Integration for ERPNext"
 requires-python = ">=3.10"
