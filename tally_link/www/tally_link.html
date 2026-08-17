@@ -1,0 +1,280 @@
+{% extends "templates/web.html" %}
+
+{% block title %}Tally Link{% endblock %}
+
+{% block head_include %}
+<style>
+  :root {
+    --tl-blue: #2563eb;
+    --tl-blue-light: #eff6ff;
+    --tl-green: #16a34a;
+    --tl-green-light: #f0fdf4;
+    --tl-red: #dc2626;
+    --tl-red-light: #fef2f2;
+    --tl-orange: #ea580c;
+    --tl-orange-light: #fff7ed;
+    --tl-grey: #6b7280;
+    --tl-border: #e5e7eb;
+    --tl-radius: 12px;
+    --tl-shadow: 0 1px 4px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.05);
+  }
+
+  body { background: #f8fafc; }
+
+  .tl-hero {
+    background: linear-gradient(135deg, #1e40af 0%, #2563eb 60%, #3b82f6 100%);
+    color: #fff;
+    padding: 48px 0 36px;
+    border-radius: 0 0 32px 32px;
+    margin-bottom: 36px;
+  }
+  .tl-hero-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .tl-hero img { width: 72px; height: 72px; border-radius: 18px; box-shadow: 0 4px 16px rgba(0,0,0,.25); }
+  .tl-hero h1 { font-size: 2rem; font-weight: 700; margin: 0 0 6px; }
+  .tl-hero p  { font-size: 1rem; margin: 0; opacity: .85; }
+
+  .tl-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 12px; border-radius: 999px; font-size: .78rem; font-weight: 600;
+    margin-top: 10px;
+  }
+  .tl-badge.green  { background: rgba(255,255,255,.15); color: #bbf7d0; }
+  .tl-badge.red    { background: rgba(255,255,255,.15); color: #fca5a5; }
+  .tl-badge.orange { background: rgba(255,255,255,.15); color: #fed7aa; }
+  .tl-badge::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+
+  .tl-main { max-width: 1100px; margin: 0 auto; padding: 0 24px 60px; }
+
+  /* Stat cards */
+  .tl-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .tl-stat {
+    background: #fff;
+    border: 1px solid var(--tl-border);
+    border-radius: var(--tl-radius);
+    padding: 24px;
+    box-shadow: var(--tl-shadow);
+    display: flex; flex-direction: column; gap: 8px;
+    transition: box-shadow .2s;
+  }
+  .tl-stat:hover { box-shadow: 0 4px 24px rgba(37,99,235,.12); }
+  .tl-stat-icon {
+    width: 42px; height: 42px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
+  }
+  .tl-stat-icon.blue   { background: var(--tl-blue-light);   color: var(--tl-blue); }
+  .tl-stat-icon.green  { background: var(--tl-green-light);  color: var(--tl-green); }
+  .tl-stat-icon.orange { background: var(--tl-orange-light); color: var(--tl-orange); }
+  .tl-stat-icon.purple { background: #f5f3ff; color: #7c3aed; }
+  .tl-stat-value { font-size: 2rem; font-weight: 700; color: #111827; line-height: 1; }
+  .tl-stat-label { font-size: .82rem; color: var(--tl-grey); font-weight: 500; text-transform: uppercase; letter-spacing: .04em; }
+
+  /* Quick actions */
+  .tl-section-title {
+    font-size: 1rem; font-weight: 600; color: #374151;
+    margin: 0 0 14px; padding-bottom: 8px;
+    border-bottom: 2px solid var(--tl-border);
+  }
+  .tl-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  .tl-action-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    background: #fff; border: 1px solid var(--tl-border);
+    border-radius: var(--tl-radius); padding: 22px 16px;
+    cursor: pointer; text-decoration: none; color: #374151;
+    box-shadow: var(--tl-shadow); transition: all .2s;
+    font-size: .88rem; font-weight: 500; text-align: center;
+  }
+  .tl-action-btn:hover {
+    border-color: var(--tl-blue); color: var(--tl-blue);
+    box-shadow: 0 4px 20px rgba(37,99,235,.15); transform: translateY(-2px);
+  }
+  .tl-action-btn .icon { font-size: 1.6rem; }
+
+  /* Recent logs table */
+  .tl-card {
+    background: #fff; border: 1px solid var(--tl-border);
+    border-radius: var(--tl-radius); box-shadow: var(--tl-shadow);
+    overflow: hidden; margin-bottom: 24px;
+  }
+  .tl-card-header {
+    padding: 16px 20px; border-bottom: 1px solid var(--tl-border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .tl-card-header h3 { margin: 0; font-size: .95rem; font-weight: 600; color: #111827; }
+  .tl-card-header a  { font-size: .82rem; color: var(--tl-blue); text-decoration: none; }
+  table.tl-table { width: 100%; border-collapse: collapse; }
+  .tl-table th {
+    background: #f9fafb; font-size: .75rem; font-weight: 600;
+    color: var(--tl-grey); text-transform: uppercase; letter-spacing: .05em;
+    padding: 10px 20px; text-align: left; border-bottom: 1px solid var(--tl-border);
+  }
+  .tl-table td { padding: 12px 20px; font-size: .85rem; border-bottom: 1px solid #f3f4f6; color: #374151; }
+  .tl-table tr:last-child td { border-bottom: none; }
+  .tl-table tr:hover td { background: #f9fafb; }
+
+  .tl-pill {
+    display: inline-block; padding: 2px 10px; border-radius: 999px;
+    font-size: .73rem; font-weight: 600;
+  }
+  .tl-pill.Success  { background: var(--tl-green-light);  color: var(--tl-green); }
+  .tl-pill.Failed   { background: var(--tl-red-light);    color: var(--tl-red); }
+  .tl-pill.Partial  { background: var(--tl-orange-light); color: var(--tl-orange); }
+  .tl-pill.Pending  { background: #f3f4f6; color: var(--tl-grey); }
+
+  .tl-empty { padding: 32px; text-align: center; color: var(--tl-grey); font-size: .88rem; }
+
+  @media (max-width: 640px) {
+    .tl-hero h1 { font-size: 1.4rem; }
+    .tl-hero img { width: 52px; height: 52px; }
+  }
+</style>
+{% endblock %}
+
+{% block page_content %}
+
+<!-- Hero -->
+<div class="tl-hero">
+  <div class="tl-hero-inner">
+    <img src="/assets/tally_link/images/image.png" alt="Tally Link">
+    <div>
+      <h1>Tally Link</h1>
+      <p>Real-time synchronisation between Tally Software and ERPNext</p>
+      {% if sync_enabled %}
+        <span class="tl-badge green">Integration Enabled</span>
+      {% elif settings.host %}
+        <span class="tl-badge orange">Integration Disabled</span>
+      {% else %}
+        <span class="tl-badge red">Not Configured</span>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="tl-main">
+
+  <!-- Stats -->
+  <div class="tl-stats">
+    <div class="tl-stat">
+      <div class="tl-stat-icon blue">📒</div>
+      <div class="tl-stat-value">{{ stats.ledgers }}</div>
+      <div class="tl-stat-label">Tally Ledgers</div>
+    </div>
+    <div class="tl-stat">
+      <div class="tl-stat-icon green">📦</div>
+      <div class="tl-stat-value">{{ stats.stock_items }}</div>
+      <div class="tl-stat-label">Stock Items</div>
+    </div>
+    <div class="tl-stat">
+      <div class="tl-stat-icon orange">🧾</div>
+      <div class="tl-stat-value">{{ stats.vouchers }}</div>
+      <div class="tl-stat-label">Vouchers</div>
+    </div>
+    <div class="tl-stat">
+      <div class="tl-stat-icon purple">🔄</div>
+      <div class="tl-stat-value">{{ stats.sync_logs }}</div>
+      <div class="tl-stat-label">Sync Logs</div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="tl-section-title">Quick Actions</div>
+  <div class="tl-actions">
+    <a class="tl-action-btn" href="/app/tally-settings/Tally Settings">
+      <span class="icon">⚙️</span> Settings
+    </a>
+    <a class="tl-action-btn" href="/app/tally-ledger">
+      <span class="icon">📒</span> Ledgers
+    </a>
+    <a class="tl-action-btn" href="/app/tally-stock-item">
+      <span class="icon">📦</span> Stock Items
+    </a>
+    <a class="tl-action-btn" href="/app/tally-voucher">
+      <span class="icon">🧾</span> Vouchers
+    </a>
+    <a class="tl-action-btn" href="/app/tally-sync-log">
+      <span class="icon">🔄</span> Sync Logs
+    </a>
+  </div>
+
+  <!-- Recent Sync Activity -->
+  <div class="tl-card">
+    <div class="tl-card-header">
+      <h3>Recent Sync Activity</h3>
+      <a href="/app/tally-sync-log">View all →</a>
+    </div>
+    {% if recent_logs %}
+    <table class="tl-table">
+      <thead>
+        <tr>
+          <th>Entity</th>
+          <th>Type</th>
+          <th>Direction</th>
+          <th>Status</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for log in recent_logs %}
+        <tr>
+          <td>
+            <a href="/app/tally-sync-log/{{ log.name }}" style="color: inherit; text-decoration: none;">
+              {{ log.entity_name or log.name }}
+            </a>
+          </td>
+          <td>{{ log.entity_type or "—" }}</td>
+          <td>{{ log.direction or "—" }}</td>
+          <td><span class="tl-pill {{ log.status }}">{{ log.status }}</span></td>
+          <td style="color: var(--tl-grey);">{{ frappe.format(log.sync_date, "Datetime") if log.sync_date else "—" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="tl-empty">No synchronisation activity recorded yet.</div>
+    {% endif %}
+  </div>
+
+  <!-- Connection Info -->
+  {% if settings.host %}
+  <div class="tl-card">
+    <div class="tl-card-header">
+      <h3>Connection Details</h3>
+      <a href="/app/tally-settings/Tally Settings">Edit →</a>
+    </div>
+    <table class="tl-table">
+      <tbody>
+        <tr><td style="width:160px; color:var(--tl-grey); font-weight:500;">Tally Server</td><td>{{ settings.host }}</td></tr>
+        <tr><td style="color:var(--tl-grey); font-weight:500;">Port</td><td>{{ settings.port }}</td></tr>
+        <tr><td style="color:var(--tl-grey); font-weight:500;">Status</td>
+          <td>
+            {% if sync_enabled %}
+              <span class="tl-pill Success">{{ conn_status }}</span>
+            {% else %}
+              <span class="tl-pill Pending">{{ conn_status }}</span>
+            {% endif %}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+</div>
+
+{% endblock %}
