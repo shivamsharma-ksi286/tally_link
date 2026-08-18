@@ -93,7 +93,7 @@ doctype_js = {
 # ------------
 
 # before_install = "tally_link.install.before_install"
-# after_install = "tally_link.install.after_install"
+after_install = "tally_link.install.after_install"
 
 # Uninstallation
 # ------------
@@ -179,6 +179,15 @@ doc_events = {
 		"on_update": "tally_link.tally.events.tally_stock_item_on_update",
 	},
 }
+
+# Migration
+# ---------
+# Ensures this app's Installed Applications entry never marks it as
+# needing a setup wizard, so it reliably appears on the desk Apps screen
+# (add_to_apps_screen) on every deployment, including Frappe Cloud.
+after_migrate = [
+	"tally_link.install.after_migrate"
+]
 
 # Scheduled Tasks
 # ---------------
