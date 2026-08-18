@@ -61,7 +61,7 @@ doctype_js = {
 # Svg Icons
 # ------------------
 # include app icons in desk
-# app_include_icons = "tally_link/public/icons.svg"
+app_include_icons = ["tally_link/icons/tally-link-icons.svg"]
 
 # Home Pages
 # ----------
