@@ -30,7 +30,7 @@ add_to_apps_screen = [
 
 # include js, css files in header of desk.html
 # app_include_css = "/assets/tally_link/css/tally_link.css"
-# app_include_js = "/assets/tally_link/js/tally_link.js"
+app_include_js = "/assets/tally_link/js/tally_bulk_actions.js"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/tally_link/css/tally_link.css"
@@ -54,7 +54,13 @@ doctype_js = {
 	"Customer": "public/js/customer.js",
 	"Supplier": "public/js/supplier.js",
 }
-# doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
+doctype_list_js = {
+	"Sales Invoice": "public/js/sales_invoice_list.js",
+	"Purchase Invoice": "public/js/purchase_invoice_list.js",
+	"Payment Entry": "public/js/payment_entry_list.js",
+	"Customer": "public/js/customer_list.js",
+	"Supplier": "public/js/supplier_list.js",
+}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 
